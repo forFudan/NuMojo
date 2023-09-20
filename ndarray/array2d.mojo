@@ -768,4 +768,37 @@ struct Array[dtype:DType,opt_nelts:Int]:
                 numpy_array.itemset((row, col), self[col, row])
         return numpy_array
 
-    
+    @staticmethod
+    fn from_numpy(in_arr: PythonObject) raises -> Self:
+
+        let np = Python.import_module("numpy")
+        # assert target.dims > 2, '3-dimensional arrays or higher are not supported.'
+        if in_arr.ndim > 2:
+            raise Error('3-dimensional arrays or higher are not supported')
+        # as of 19/12/23: "error: unpacked arguments are not supported yet"
+        # let returnable = self.__init__(*target.shape)
+        var out_arr = Self(in_arr.shape[0].__index__(), in_arr.shape[1].__index__())
+
+        let in_arr_f32 = in_arr.astype(np.float32)
+
+        out_arr.data =  DTypePointer[dtype](
+            __mlir_op.`pop.index_to_pointer`[
+                _type : __mlir_type[`!kgen.pointer<scalar<f32>>`]
+            ](
+                SIMD[DType.index, 1](
+                    in_arr_f32.__array_interface__["data"][0].__index__()
+                ).value
+            )
+        )
+
+        return out_arr
+
+        # for i in range(in_arr.shape[0]):
+        #     for j in range(in_arr.shape[1]):
+        #         out_arr.__setitem__(
+        #             i, 
+        #             j, 
+        #             # PythonObject to float64 to float32 (PythonObject to float32 isn't available)
+        #             in_arr[i][j].to_float64().cast[dtype]()
+        #         )
+        
