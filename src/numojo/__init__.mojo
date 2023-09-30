@@ -1,0 +1,1 @@
+from .numojo import array
