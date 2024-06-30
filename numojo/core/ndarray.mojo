@@ -1708,6 +1708,16 @@ struct NDArray[dtype: DType = DType.float32](Stringable, Sized):
     fn sort(self) raises -> Self:
         return numojo.core.sort.quick_sort(self)
 
+    fn sorted(inout self) raises:
+        """In-place sort the array.
+        """
+
+        numojo.core.sort.quick_sort_inplace(
+            self, 
+            left=0, 
+            right=self.size()-1
+            )
+
     fn sum(self: Self, axis: Int) raises -> Self:
         """
         Sum of array elements over a given axis.
