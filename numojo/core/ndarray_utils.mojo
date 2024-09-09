@@ -14,7 +14,7 @@ from .ndarray import NDArray, NDArrayShape, NDArrayStride
 
 fn fill_pointer[
     dtype: DType
-](inout array: DTypePointer[dtype], size: Int, value: Scalar[dtype]) raises:
+](inout array: DTypePointer[dtype], size: Int, value: Scalar[dtype]):
     """
     Fill a NDArray with a specific value.
 

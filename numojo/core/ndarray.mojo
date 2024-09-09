@@ -373,52 +373,62 @@ struct NDArrayStride[dtype: DType = DType.int32](Stringable):
             self.ndstride[i] = stride.ndstride[i]
 
     @always_inline("nodebug")
-    fn __init__(
-        inout self, *shape: Int, offset: Int = 0, order: String = "C"
-    ) raises:
+    fn __init__(inout self, *shape: Int, offset: Int = 0, order: String = "C"):
         self.ndoffset = offset
         self.ndlen = shape.__len__()
         self.ndstride = DTypePointer[dtype].alloc(self.ndlen)
         memset_zero(self.ndstride, self.ndlen)
-        if order == "C":
+        if order == "F":
+            self.ndstride[0] = 1
+            for i in range(0, self.ndlen - 1):
+                self.ndstride[i + 1] = self.ndstride[i] * shape[i]
+        else:
+            if order != "C":
+                # raise Error(
+                #     "Invalid order: Only C style row major `C` & Fortran style"
+                #     " column major `F` are supported"
+                # )
+                print(
+                    "Invalid input for 'order': Only C style row-major `C' &"
+                    " Fortran style column-major `F' are supported. Treat it as"
+                    " row-major `C'"
+                )
+
             for i in range(self.ndlen):
                 var temp: Int = 1
                 for j in range(i + 1, self.ndlen):
                     temp = temp * shape[j]
                 self.ndstride[i] = temp
-        elif order == "F":
-            self.ndstride[0] = 1
-            for i in range(0, self.ndlen - 1):
-                self.ndstride[i + 1] = self.ndstride[i] * shape[i]
-        else:
-            raise Error(
-                "Invalid order: Only C style row major `C` & Fortran style"
-                " column major `F` are supported"
-            )
 
     @always_inline("nodebug")
     fn __init__(
         inout self, shape: List[Int], offset: Int = 0, order: String = "C"
-    ) raises:
+    ):
         self.ndoffset = offset
         self.ndlen = shape.__len__()
         self.ndstride = DTypePointer[dtype].alloc(self.ndlen)
         memset_zero(self.ndstride, self.ndlen)
-        if order == "C":
+        if order == "F":
+            self.ndstride[0] = 1
+            for i in range(0, self.ndlen - 1):
+                self.ndstride[i + 1] = self.ndstride[i] * shape[i]
+        else:
+            if order != "C":
+                # raise Error(
+                #     "Invalid order: Only C style row major `C` & Fortran style"
+                #     " column major `F` are supported"
+                # )
+                print(
+                    "Invalid input for 'order': Only C style row-major `C' &"
+                    " Fortran style column-major `F' are supported. Treat it as"
+                    " row-major `C'"
+                )
+
             for i in range(self.ndlen):
                 var temp: Int = 1
                 for j in range(i + 1, self.ndlen):
                     temp = temp * shape[j]
                 self.ndstride[i] = temp
-        elif order == "F":
-            self.ndstride[0] = 1
-            for i in range(0, self.ndlen - 1):
-                self.ndstride[i + 1] = self.ndstride[i] * shape[i]
-        else:
-            raise Error(
-                "Invalid order: Only C style row major `C` & Fortran style"
-                " column major `F` are supported"
-            )
 
     @always_inline("nodebug")
     fn __init__(
@@ -426,26 +436,32 @@ struct NDArrayStride[dtype: DType = DType.int32](Stringable):
         shape: VariadicList[Int],
         offset: Int = 0,
         order: String = "C",
-    ) raises:
+    ):
         self.ndoffset = offset
         self.ndlen = shape.__len__()
         self.ndstride = DTypePointer[dtype].alloc(self.ndlen)
         memset_zero(self.ndstride, self.ndlen)
-        if order == "C":
+        if order == "F":
+            self.ndstride[0] = 1
+            for i in range(0, self.ndlen - 1):
+                self.ndstride[i + 1] = self.ndstride[i] * shape[i]
+        else:
+            if order != "C":
+                # raise Error(
+                #     "Invalid order: Only C style row major `C` & Fortran style"
+                #     " column major `F` are supported"
+                # )
+                print(
+                    "Invalid input for 'order': Only C style row-major `C' &"
+                    " Fortran style column-major `F' are supported. Treat it as"
+                    " row-major `C'"
+                )
+
             for i in range(self.ndlen):
                 var temp: Int = 1
                 for j in range(i + 1, self.ndlen):
                     temp = temp * shape[j]
                 self.ndstride[i] = temp
-        elif order == "F":
-            self.ndstride[0] = 1
-            for i in range(0, self.ndlen - 1):
-                self.ndstride[i + 1] = self.ndstride[i] * shape[i]
-        else:
-            raise Error(
-                "Invalid order: Only C style row major `C` & Fortran style"
-                " column major `F` are supported"
-            )
 
     @always_inline("nodebug")
     fn __init__(
@@ -458,7 +474,21 @@ struct NDArrayStride[dtype: DType = DType.int32](Stringable):
         self.ndlen = shape.ndlen
         self.ndstride = DTypePointer[dtype].alloc(shape.ndlen)
         memset_zero(self.ndstride, shape.ndlen)
-        if order == "C":
+        if order == "F":
+            self.ndstride[0] = 1
+            for i in range(0, self.ndlen - 1):
+                self.ndstride[i + 1] = self.ndstride[i] * shape[i]
+        else:
+            if order != "C":
+                # raise Error(
+                #     "Invalid order: Only C style row major `C` & Fortran style"
+                #     " column major `F` are supported"
+                # )
+                print(
+                    "Invalid input for 'order': Only C style row-major `C' &"
+                    " Fortran style column-major `F' are supported. Treat it as"
+                    " row-major `C'"
+                )
             if shape.ndlen == 1:
                 self.ndstride[0] = 1
             else:
@@ -467,15 +497,6 @@ struct NDArrayStride[dtype: DType = DType.int32](Stringable):
                     for j in range(i + 1, shape.ndlen):
                         temp = temp * shape[j]
                     self.ndstride[i] = temp
-        elif order == "F":
-            self.ndstride[0] = 1
-            for i in range(0, self.ndlen - 1):
-                self.ndstride[i + 1] = self.ndstride[i] * shape[i]
-        else:
-            raise Error(
-                "Invalid order: Only C style row major `C` & Fortran style"
-                " column major `F` are supported"
-            )
 
     fn __copy__(inout self, other: Self):
         self.ndoffset = other.ndoffset
@@ -660,7 +681,7 @@ struct NDArray[dtype: DType = DType.float64](
         *shape: Int,
         fill: Optional[Scalar[dtype]] = None,
         order: String = "C",
-    ) raises:
+    ):
         """
         NDArray initialization for variadic shape with option to fill.
 
@@ -690,7 +711,7 @@ struct NDArray[dtype: DType = DType.float64](
         shape: List[Int],
         fill: Optional[Scalar[dtype]] = None,
         order: String = "C",
-    ) raises:
+    ):
         """
         NDArray initialization for variadic shape with option to fill.
 
@@ -720,7 +741,7 @@ struct NDArray[dtype: DType = DType.float64](
         shape: VariadicList[Int],
         fill: Optional[Scalar[dtype]] = None,
         order: String = "C",
-    ) raises:
+    ):
         """
         NDArray initialization for List of shape with option to fill.
 
@@ -779,7 +800,7 @@ struct NDArray[dtype: DType = DType.float64](
         data: List[SIMD[dtype, 1]],
         shape: List[Int],
         order: String = "C",
-    ) raises:
+    ):
         """
         NDArray initialization from list of data.
 
@@ -810,7 +831,7 @@ struct NDArray[dtype: DType = DType.float64](
         min: Scalar[dtype],
         max: Scalar[dtype],
         order: String = "C",
-    ) raises:
+    ):
         """
         NDArray initialization for variadic shape with random values between min and max.
 
@@ -864,7 +885,7 @@ struct NDArray[dtype: DType = DType.float64](
         min: Scalar[dtype],
         max: Scalar[dtype],
         order: String = "C",
-    ) raises:
+    ):
         """
         NDArray initialization for list shape with random values between min and max.
 
@@ -2697,8 +2718,9 @@ struct NDArray[dtype: DType = DType.float64](
                 raise Error("Error: Elements of `index` exceed the array shape")
         return self.data.load[width=1](_get_index(index, self.stride))
 
-
-    fn itemset(inout self, index: Variant[Int, List[Int]], item: Scalar[dtype]) raises:
+    fn itemset(
+        inout self, index: Variant[Int, List[Int]], item: Scalar[dtype]
+    ) raises:
         """Set the scalar at the coordinates.
 
         Args:
@@ -2771,9 +2793,10 @@ struct NDArray[dtype: DType = DType.float64](
                 raise Error("Error: Length of Indices do not match the shape")
             for i in range(indices.__len__()):
                 if indices[i] >= self.ndshape[i]:
-                    raise Error("Error: Elements of `index` exceed the array shape")
+                    raise Error(
+                        "Error: Elements of `index` exceed the array shape"
+                    )
             self.data.store[width=1](_get_index(indices, self.stride), item)
-
 
     fn max(self, axis: Int = 0) raises -> Self:
         """
