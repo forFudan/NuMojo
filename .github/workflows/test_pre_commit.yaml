@@ -32,6 +32,8 @@ jobs:
           echo "$HOME/.modular/bin" >> $GITHUB_PATH
 
           "$HOME/.modular/bin/magic" self-update
+
+          source /home/runner/.bash_profile 
           
       - name: Install pre-commit
         run: |
