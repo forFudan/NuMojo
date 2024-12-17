@@ -46,4 +46,6 @@ jobs:
           pre-commit install
       
       - name: Run pre-commit
-        run: pre-commit run --all-files
+        run: | 
+          magic install
+          pre-commit run --all-files
